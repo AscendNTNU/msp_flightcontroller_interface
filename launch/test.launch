@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="msp_fc_driver" type="msp_fc_driver.py" name="msp_fc_driver" output="screen" />
+    <node pkg="msp_fc_driver" type="test_node.py" name="test_node" output="screen" />
+</launch>
