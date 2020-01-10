@@ -19,9 +19,11 @@ RUN mkdir -p $ROS_WORKSPACE_PATH/src && \
     echo "source $ROS_WORKSPACE_PATH/devel/setup.bash" >> ~/.bashrc && \
     /bin/bash -c "source ~/.bashrc"
 
+# Install useful tools
+RUN apt install -y tmux
+
+# Configure tools
+RUN echo "set -g mouse on" >> ~/.tmux.conf && \
+    echo "bind -n WheelUpPane if-shell -F -t = \"#{mouse_any_flag}\" \"send-keys -M\" \"if -Ft= '#{pane_in_mode}' 'send-keys -M' 'copy-mode -e'\"" >> ~/.tmux.conf
+
 WORKDIR $ROS_WORKSPACE_PATH/src
-
-COPY ./ $ROS_WORKSPACE_PATH/src/$ROS_PACKAGE_NAME/
-RUN cd $ROS_WORKSPACE_PATH && \
-    catkin build
-
