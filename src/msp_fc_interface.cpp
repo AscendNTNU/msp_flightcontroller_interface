@@ -9,9 +9,9 @@
 class MspInterface {
     MSP msp;
     std::vector<uint16_t> rcData;
-    double max_roll_r  = 673;
-    double max_pitch_r = 673;
-    double max_yaw_r   = 673;
+    double max_roll_r  = 200;
+    double max_pitch_r = 200;
+    double max_yaw_r   = 200;
     ros::Publisher pub_armed;
     ros::Publisher pub_offboard;
 
@@ -49,6 +49,14 @@ public:
             is_armed.data = droneRcData[5] > 1800;
             pub_armed.publish(is_armed);
         });
+
+        // Get rateprofile params
+        n.param<double>("rc_rates/roll",  max_roll_r, 1.0);
+        n.param<double>("rc_rates/pitch", max_pitch_r, 1.0);
+        n.param<double>("rc_rates/yaw",   max_yaw_r, 1.0);
+        max_roll_r  *= 200;
+        max_pitch_r *= 200;
+        max_yaw_r   *= 200;
 
         // TODO: get imu data?
     }
