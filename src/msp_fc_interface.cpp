@@ -42,11 +42,11 @@ public:
             }
 
             std_msgs::Bool is_offboard;
-            is_offboard.data = droneRcData[6] > 1800;
+            is_offboard.data = droneRcData[5] > 1800;
             pub_offboard.publish(is_offboard);
 
             std_msgs::Bool is_armed;
-            is_armed.data = droneRcData[5] > 1800;
+            is_armed.data = droneRcData[4] > 1800;
             pub_armed.publish(is_armed);
         });
 
