@@ -55,6 +55,7 @@ public:
                     << droneRcData[0] << ", "
                     << droneRcData[1] << ", "
                     << droneRcData[2] << ", "
+                    << droneRcData[3] << ", "
                     << droneRcData[4] << ", "
                     << droneRcData[5]);
         });
