@@ -12,6 +12,8 @@ class MspInterface {
     double max_roll_r  = 200;
     double max_pitch_r = 200;
     double max_yaw_r   = 200;
+    double hover_thrust = 0.3;
+    double mass = 1.0;
     ros::Publisher pub_armed;
     ros::Publisher pub_offboard;
 
@@ -54,6 +56,8 @@ public:
         n.param<double>("rc_rates/roll",  max_roll_r, 1.0);
         n.param<double>("rc_rates/pitch", max_pitch_r, 1.0);
         n.param<double>("rc_rates/yaw",   max_yaw_r, 1.0);
+        n.param<double>("rc_rates/hover_thrust", hover_thrust, 1.0);
+        n.param<double>("uav/mass", mass, 1.0);
         max_roll_r  *= 200;
         max_pitch_r *= 200;
         max_yaw_r   *= 200;
@@ -77,7 +81,9 @@ public:
         rcData[0] = (uint16_t) std::min(500,  std::max(-500, (int) round(roll_r  * 500))) + 1500;
         rcData[1] = (uint16_t) std::min(500,  std::max(-500, (int) round(pitch_r * 500))) + 1500;
         rcData[2] = (uint16_t) std::min(500,  std::max(-500, (int) round(yaw_r   * 500))) + 1500;
-        rcData[3] = (uint16_t) std::min(1000, std::max(0, (int) round(rates.thrust.z * 1000))) + 1000;
+        
+        double thrust = rates.thrust.z / 9.81 / mass * hover_thrust;
+        rcData[3] = (uint16_t) std::min(1000, std::max(0, (int) round(thrust * 1000))) + 1000;
     }
 
     void step() {
