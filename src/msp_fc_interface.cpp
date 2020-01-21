@@ -50,6 +50,13 @@ public:
             std_msgs::Bool is_armed;
             is_armed.data = droneRcData[4] > 1800;
             pub_armed.publish(is_armed);
+
+            ROS_INFO_STREAM("RC_DATA = "
+                    << droneRcData[0] << ", "
+                    << droneRcData[1] << ", "
+                    << droneRcData[2] << ", "
+                    << droneRcData[4] << ", "
+                    << droneRcData[5]);
         });
 
         // Get rateprofile params
