@@ -62,6 +62,11 @@ public:
         max_pitch_r *= 200;
         max_yaw_r   *= 200;
 
+        ROS_INFO_STREAM("max_roll_r = " << max_roll_r);
+        ROS_INFO_STREAM("max_pitch_r = " << max_pitch_r);
+        ROS_INFO_STREAM("hover_thrust = " << hover_thrust);
+        ROS_INFO_STREAM("mass = " << mass);
+
         // TODO: get imu data?
     }
 
