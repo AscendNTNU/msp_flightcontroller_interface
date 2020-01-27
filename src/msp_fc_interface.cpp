@@ -61,11 +61,11 @@ public:
         });
 
         // Get rateprofile params
-        n.param<double>("rc_rates/roll",  max_roll_r, 1.0);
-        n.param<double>("rc_rates/pitch", max_pitch_r, 1.0);
-        n.param<double>("rc_rates/yaw",   max_yaw_r, 1.0);
-        n.param<double>("rc_rates/hover_thrust", hover_thrust, 1.0);
-        n.param<double>("uav/mass", mass, 1.0);
+        n.param<double>("/rc_rates/roll",  max_roll_r, 1.0);
+        n.param<double>("/rc_rates/pitch", max_pitch_r, 1.0);
+        n.param<double>("/rc_rates/yaw",   max_yaw_r, 1.0);
+        n.param<double>("/rc_rates/hover_thrust", hover_thrust, 1.0);
+        n.param<double>("/uav/mass", mass, 1.0);
         max_roll_r  *= 200;
         max_pitch_r *= 200;
         max_yaw_r   *= 200;
