@@ -32,7 +32,7 @@ public:
         : msp(path), rcData(5, 1500)
     {
         // Set thurst to 0
-        rcData[3] = 1000;
+        rcData[2] = 1000;
 
         pub_armed = n.advertise<std_msgs::Bool>("/uav/state/armed", 1, true);
         pub_offboard = n.advertise<std_msgs::Bool>("/uav/state/offboard", 1, true);
