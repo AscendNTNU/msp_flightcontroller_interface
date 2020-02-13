@@ -88,9 +88,9 @@ public:
     }
 
     void set_rates(mav_msgs::RateThrust rates) {
-        double roll_r    = rates.angular_rates.x * 360 / M_PI / max_roll_r;
-        double pitch_r   = rates.angular_rates.y * 360 / M_PI / max_pitch_r;
-        double yaw_r     = rates.angular_rates.z * 360 / M_PI / max_yaw_r;
+        double roll_r    = rates.angular_rates.x * 180 / M_PI / max_roll_r;
+        double pitch_r   = rates.angular_rates.y * 180 / M_PI / max_pitch_r;
+        double yaw_r     = rates.angular_rates.z * 180 / M_PI / max_yaw_r;
         rcData[0] = (uint16_t) std::min(500,  std::max(-500, (int) round(roll_r  * 500))) + 1500;
         rcData[1] = (uint16_t) std::min(500,  std::max(-500, (int) round(pitch_r * 500))) + 1500;
         rcData[3] = (uint16_t) std::min(500,  std::max(-500, (int) round(yaw_r   * 500))) + 1500;
