@@ -49,14 +49,6 @@ public:
             std_msgs::Bool is_armed;
             is_armed.data = droneRcData[4] > 1800;
             pub_armed.publish(is_armed);
-
-            ROS_INFO_STREAM("RC_DATA = "
-                    << droneRcData[0] << ", "
-                    << droneRcData[1] << ", "
-                    << droneRcData[2] << ", "
-                    << droneRcData[3] << ", "
-                    << droneRcData[4] << ", "
-                    << droneRcData[5]);
         });
 
         // Get rateprofile params
@@ -68,13 +60,6 @@ public:
         max_roll_r  *= 200;
         max_pitch_r *= 200;
         max_yaw_r   *= 200;
-
-        ROS_INFO_STREAM("max_roll_r = " << max_roll_r);
-        ROS_INFO_STREAM("max_pitch_r = " << max_pitch_r);
-        ROS_INFO_STREAM("hover_thrust = " << hover_thrust);
-        ROS_INFO_STREAM("mass = " << mass);
-
-        // TODO: get imu data?
     }
 
     void set_armed(std_msgs::Bool armed) {
@@ -104,9 +89,6 @@ public:
 
         // Request rc data
         msp.send_msg(MSP::RC, {});
-
-        // Request imu data
-        msp.send_msg(MSP::RAW_IMU, {});
 
         // Recive new msp messages
         msp.recv_msgs();
