@@ -17,11 +17,10 @@ class MspInterface {
     ros::Publisher pub_armed;
     ros::Publisher pub_offboard;
 
-    std::vector<unsigned char> serialize_rc_data() {
-        std::vector<unsigned char> result(rcData.size()*2);
+    Payload serialize_rc_data() {
+        Payload result;
         for (int i = 0; i < rcData.size(); i++) {
-            result[i*2] = rcData[i] & 0xff;
-            result[i*2+1] = (rcData[i] >> 8) & 0xff;
+            result.put_u16(rcData[i]);
         }
 
         return result;
@@ -37,10 +36,10 @@ public:
         pub_armed = n.advertise<std_msgs::Bool>("/uav/state/armed", 1, true);
         pub_offboard = n.advertise<std_msgs::Bool>("/uav/state/offboard", 1, true);
 
-        msp.register_callback(MSP::RC, [this](std::vector<unsigned char> &payload) {
+        msp.register_callback(MSP::RC, [this](Payload payload) {
             std::vector<uint16_t> droneRcData(payload.size() / 2);
             for (int i = 0; i < droneRcData.size(); i++) {
-                droneRcData[i] = payload[i*2] | (payload[i*2 + 1] << 8);
+                droneRcData[i] = payload.get_u16();
             }
 
             std_msgs::Bool is_offboard;

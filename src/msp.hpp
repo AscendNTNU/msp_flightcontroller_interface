@@ -3,6 +3,54 @@
 #include <functional>
 #include "serial.hpp"
 
+class Payload {
+    std::vector<unsigned char> payload;
+    int i = 0;
+
+public:
+    Payload() {}
+    Payload(std::vector<unsigned char> payload) : payload(payload) {}
+
+    int size() const {
+        return payload.size();
+    }
+
+    uint8_t get_u8() {
+        if (i >= payload.size()) return 0;
+        return payload[i++];
+    }
+
+    uint16_t get_u16() {
+        uint16_t res = get_u8();
+        res |= get_u8() << 8;
+        return res;
+    }
+
+    uint32_t get_u32() {
+        uint32_t res = get_u16();
+        res |= get_u16() << 16;
+        return res;
+    }
+
+    void put_u8(uint8_t x) {
+        payload.push_back(x);
+    }
+
+    void put_u16(uint16_t x) {
+        put_u8(x & 0xff);
+        put_u8((x >> 8) & 0xff);
+    }
+
+    void put_u32(uint32_t x) {
+        put_u16(x & 0xffff);
+        put_u16((x >> 16) & 0xffff);
+    }
+
+    const std::vector<unsigned char> &get_payload() const {
+        return payload;
+    }
+};
+
 template<class T, int N>
 class CircBuff {
     T buffer[N];
@@ -50,7 +98,7 @@ public:
 class MSP {
     Serial device;
     CircBuff<unsigned char, 1024> buffer;
-    std::map<unsigned char, std::function<void(std::vector<unsigned char>&)>>
+    std::map<unsigned char, std::function<void(Payload)>>
         callback_table;
 
     bool try_parse() {
@@ -95,7 +143,7 @@ class MSP {
         buffer.pop();
 
         if (callback_table.find(msg_cmd) != callback_table.end())
-            callback_table[msg_cmd](msg_payload);
+            callback_table[msg_cmd](Payload(msg_payload));
         
         return true;
     }
@@ -137,6 +185,7 @@ public:
         WP = 118,
         BOXIDS = 119,
         RC_RAW_IMU = 121,
+        BATTERY_STATE = 130,
         SET_RAW_RC = 200,
         SET_RAW_GPS = 201,
         SET_PID = 202,
@@ -159,7 +208,7 @@ public:
     MSP(const std::string &port)
         : device(port, 115200) {}
 
-    void send_msg(unsigned char cmd, const std::vector<unsigned char> &payload) {
+    void send_msg(unsigned char cmd, const Payload &payload) {
         device.write('$');
         device.write('M');
         device.write('<');
@@ -170,7 +219,7 @@ public:
         crc ^= (unsigned char) payload.size();
         crc ^= cmd;
 
-        for (auto &c : payload) {
+        for (auto c : payload.get_payload()) {
             device.write(c);
             crc ^= c;
         }
@@ -182,7 +231,7 @@ public:
         while (get_msg());
     }
 
-    void register_callback(unsigned char cmd, std::function<void(std::vector<unsigned char>&)> cb) {
+    void register_callback(unsigned char cmd, std::function<void(Payload)> cb) {
         callback_table[cmd] = cb;
     }
 };
