@@ -1,6 +1,7 @@
 #include <ros/ros.h>
 #include <std_msgs/Bool.h>
 #include <mav_msgs/RateThrust.h>
+#include <msp_fc_driver/RcData.h>
 #include "msp.hpp"
 
 #include <algorithm>
@@ -16,6 +17,7 @@ class MspInterface {
     double mass = 1.0;
     ros::Publisher pub_armed;
     ros::Publisher pub_offboard;
+    ros::Publisher pub_rc;
 
     Payload serialize_rc_data() {
         Payload result;
@@ -35,6 +37,7 @@ public:
 
         pub_armed = n.advertise<std_msgs::Bool>("/uav/state/armed", 1, true);
         pub_offboard = n.advertise<std_msgs::Bool>("/uav/state/offboard", 1, true);
+        pub_rc = n.advertise<msp_fc_driver::RcData>("/uav/state/rc", 1, true);
 
         msp.register_callback(MSP::RC, [this](Payload payload) {
             std::vector<uint16_t> droneRcData(payload.size() / 2);
@@ -49,6 +52,11 @@ public:
             std_msgs::Bool is_armed;
             is_armed.data = droneRcData[4] > 1800;
             pub_armed.publish(is_armed);
+
+            msp_fc_driver::RcData rc_msg;
+            for (int i = 0; i < std::min(6, (int) droneRcData.size()); i++)
+                rc_msg.channels[i] = droneRcData[i];
+            pub_rc.publish(rc_msg);
         });
 
         // Get rateprofile params

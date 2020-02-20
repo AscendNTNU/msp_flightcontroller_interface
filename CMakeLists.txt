@@ -12,11 +12,22 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   mav_msgs
+  message_generation
+)
+
+add_message_files(
+    FILES
+    RcData.msg
+)
+
+generate_messages(
+    DEPENDENCIES
+    std_msgs
 )
 
 catkin_package(
     INCLUDE_DIRS src
-    CATKIN_DEPENDS roscpp
+    CATKIN_DEPENDS roscpp message_runtime
     LIBRARIES ${PROJECT_NAME}
 )
 
