@@ -106,7 +106,7 @@ public:
 int main(int argc, char** argv) {
     ros::init(argc, argv, "msp_fc_interface");
     ros::NodeHandle n;
-    ros::Rate rate(20);
+    ros::Rate rate(30);
 
     MspInterface iface(n, "/dev/ttyACM0");
 
