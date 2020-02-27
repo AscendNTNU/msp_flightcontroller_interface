@@ -15,6 +15,7 @@ class MspInterface {
     double max_yaw_r   = 200;
     double hover_thrust = 0.3;
     double mass = 1.0;
+    bool new_rates = false;
     ros::Publisher pub_armed;
     ros::Publisher pub_offboard;
     ros::Publisher pub_rc;
@@ -89,16 +90,27 @@ public:
         
         double thrust = rates.thrust.z / 9.81 / mass * hover_thrust;
         rcData[2] = (uint16_t) std::min(1000, std::max(0, (int) round(thrust * 1000))) + 1000;
+
+        new_rates = true;
     }
 
-    void step() {
-        // Send rc data
-        msp.send_msg(MSP::SET_RAW_RC, serialize_rc_data());
+    void step_hf() {
+        if (new_rates || rcData[4] == 1000) {
+            // Send rc data
+            msp.send_msg(MSP::SET_RAW_RC, serialize_rc_data());
 
+            // Recieve new msp messages
+            msp.recv_msgs();
+        }
+
+        new_rates = false;
+    }
+
+    void step_lf() {
         // Request rc data
         msp.send_msg(MSP::RC, {});
 
-        // Recive new msp messages
+        // Recieve new msp messages
         msp.recv_msgs();
     }
 };
@@ -106,15 +118,21 @@ public:
 int main(int argc, char** argv) {
     ros::init(argc, argv, "msp_fc_interface");
     ros::NodeHandle n;
-    ros::Rate rate(30);
+    ros::Rate rate(50);
 
     MspInterface iface(n, "/dev/ttyACM0");
 
     ros::Subscriber sub_arm   = n.subscribe("/uav/control/arm", 1, &MspInterface::set_armed, &iface);
     ros::Subscriber sub_rates = n.subscribe("/uav/control/rate_thrust", 1, &MspInterface::set_rates, &iface);
 
+    int i = 0;
     while (ros::ok()) {
-        iface.step();
+        i++;
+        if (i >= 10) {
+            iface.step_lf();
+            i = 0;
+        }
+        iface.step_hf();
         ros::spinOnce();
         rate.sleep();
     }
