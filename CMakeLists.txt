@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(msp_fc_driver)
+project(msp_fc_interface)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
@@ -35,6 +35,6 @@ include_directories(
     ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(msp_fc_interface src/msp_fc_interface.cpp src/serial.cpp)
+add_executable(msp_fc_interface src/msp_node.cpp src/serial.cpp)
 target_link_libraries(msp_fc_interface
     ${catkin_LIBRARIES})
