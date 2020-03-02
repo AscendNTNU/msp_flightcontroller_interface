@@ -97,7 +97,7 @@ public:
     }
 
     void step_hf() {
-        if (new_rates || rcData[4] == 1000) {
+        if (new_rates || rcData[2] <= 1000) {
             msp_fc_interface::RcData rc_msg;
             for (int i = 0; i < std::min(6, (int) rcData.size()); i++) {
                 rc_msg.channels[i] = rcData[i];
