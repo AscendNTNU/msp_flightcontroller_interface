@@ -19,6 +19,7 @@ class MspInterface {
     ros::Publisher pub_armed;
     ros::Publisher pub_offboard;
     ros::Publisher pub_rc;
+    ros::Publisher pub_rc_cmd;
 
     Payload serialize_rc_data() {
         Payload result;
@@ -39,6 +40,7 @@ public:
         pub_armed = n.advertise<std_msgs::Bool>("/uav/state/armed", 1, true);
         pub_offboard = n.advertise<std_msgs::Bool>("/uav/state/offboard", 1, true);
         pub_rc = n.advertise<msp_fc_interface::RcData>("/uav/state/rc", 1, true);
+        pub_rc_cmd = n.advertise<msp_fc_interface::RcData>("/uav/state/rc_cmd", 1, true);
 
         msp.register_callback(MSP::RC, [this](Payload payload) {
             std::vector<uint16_t> droneRcData(payload.size() / 2);
@@ -96,6 +98,12 @@ public:
 
     void step_hf() {
         if (new_rates || rcData[4] == 1000) {
+            msp_fc_interface::RcData rc_msg;
+            for (int i = 0; i < std::min(6, (int) rcData.size()); i++) {
+                rc_msg.channels[i] = rcData[i];
+            }
+            pub_rc_cmd.publish(rc_msg);
+
             // Send rc data
             msp.send_msg(MSP::SET_RAW_RC, serialize_rc_data());
 
