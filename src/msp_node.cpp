@@ -86,7 +86,7 @@ public:
         double yaw_r     = rates.angular_rates.z * 180 / M_PI / max_yaw_r;
         rcData[0] = (uint16_t) std::min(500,  std::max(-500, (int) round(roll_r  * 500))) + 1500;
         rcData[1] = (uint16_t) std::min(500,  std::max(-500, (int) round(pitch_r * 500))) + 1500;
-        rcData[3] = (uint16_t) std::min(500,  std::max(-500, (int) round(yaw_r   * 500))) + 1500;
+        rcData[3] = (uint16_t) std::min(500,  std::max(-500, (int) round(yaw_r   * (-500)))) + 1500;
         
         double thrust = rates.thrust.z / 9.81 / mass * hover_thrust;
         rcData[2] = (uint16_t) std::min(1000, std::max(0, (int) round(thrust * 1000))) + 1000;
